@@ -7,9 +7,11 @@ import (
 )
 
 func main() {
-	db.InitDB()
-
 	paths.InitPaths()
+
+	db.InitDB()
+	db.AttachMD()
+
 	cmd.Execute()
 
 	defer db.CloseDB()

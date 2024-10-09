@@ -1,22 +1,23 @@
 package paths
 
 import (
-	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 var HomeDir string
 var KoduckDir string
+var UserHomeDir string
 
 func InitPaths() {
 	var err error
 	HomeDir, err = os.UserHomeDir()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error getting user's home directory:", err)
 	}
 
-	KoduckDir = fmt.Sprintf("%s/.koduck", HomeDir)
+	KoduckDir = filepath.Join(HomeDir, ".koduck")
 	if _, err := os.Stat(KoduckDir); os.IsNotExist(err) {
 		err := os.Mkdir(KoduckDir, 0755)
 		if err != nil {
