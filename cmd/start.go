@@ -73,15 +73,39 @@ func startSession() {
 				fmt.Println("Invalid input. Please provide a knowledge base name.")
 				continue
 			}
-		} else {
-			_, err = prompt.LLM(input, "llama3")
-			if err != nil {
-				fmt.Print("\n")
-				fmt.Println("Error generating answer:", err)
-				fmt.Print("\n")
-				fmt.Print("\n")
+		} else if strings.HasPrefix(input, ".use ") {
+			parts := strings.Fields(input)
+			if len(parts) == 2 {
+				tableName := parts[1]
+				db.KNOWLEDGE_BASE_IN_USE = tableName
+				fmt.Printf("Using knowledge base: %s\n", db.KNOWLEDGE_BASE_IN_USE)
+				continue
+			} else {
+				inUse := db.KNOWLEDGE_BASE_IN_USE
+				if inUse == "" {
+					inUse = "-"
+				}
+				fmt.Printf("Currently using knowledge base: %s\n", inUse)
 				continue
 			}
+		} else {
+			if db.KNOWLEDGE_BASE_IN_USE == "" {
+				fmt.Println("No knowledge base in use. Please use .use <knowledge_base_name> to select a knowledge base.")
+				continue
+			}
+			embedResponse, _ := prompt.Embedding([]string{input})
+			searchResults := db.Search(input, embedResponse.Embeddings[0], db.KNOWLEDGE_BASE_IN_USE)
+			for _, result := range searchResults {
+				fmt.Printf("• %s :: %s\n", result.Filename, result.Text)
+			}
+			// _, err = prompt.LLM(input, "llama3")
+			// if err != nil {
+			// 	fmt.Print("\n")
+			// 	fmt.Println("Error generating answer:", err)
+			// 	fmt.Print("\n")
+			// 	fmt.Print("\n")
+			// 	continue
+			// }
 		}
 
 		fmt.Print("\n")

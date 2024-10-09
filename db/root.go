@@ -26,6 +26,8 @@ func InitDB() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	KNOWLEDGE_BASE_IN_USE = ""
 }
 
 func AttachMD() {

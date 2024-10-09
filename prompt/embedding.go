@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+var EMBEDDING_MODEL = "bge-large"
+
 // EmbedRequest represents the request structure for the embedding API
 type EmbedRequest struct {
 	Model string   `json:"model"`
@@ -22,13 +24,13 @@ type EmbedResponse struct {
 	PromptEvalCount int         `json:"prompt_eval_count"`
 }
 
-func Embedding(input []string, model string) (EmbedResponse, error) {
+func Embedding(input []string) (EmbedResponse, error) {
 	// API endpoint
 	url := ollamaBaseURL + "/embed"
 
 	// Create the request payload
 	embedReq := EmbedRequest{
-		Model: model,
+		Model: EMBEDDING_MODEL,
 		Input: input,
 	}
 
