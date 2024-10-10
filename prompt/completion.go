@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -24,18 +25,24 @@ type CompletionResponse struct {
 	Context   []int     `json:"context"`
 }
 
-func LLM(message string, model string) (CompletionResponse, error) {
+func Completion(message string, context []string) (CompletionResponse, error) {
 	// API endpoint
 	url := ollamaBaseURL + "/generate"
 
+	prompt := `<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+You are a helpful assistant. Given the following context: ` +
+		strings.Join(context, "\n") + ` answer the following question from 
+		the user. Answer in brief, and use the keywrods provided in the context. <|eot_id|><|start_header_id|>user<|end_header_id|> ` +
+		message + ` <|eot_id|><|start_header_id|>assistant<|end_header_id|>`
+
 	// Create the request payload
-	llmReq := CompletionRequest{
-		Model:  model,
-		Prompt: message,
+	completionReq := CompletionRequest{
+		Model:  MODEL_IN_USE_COMPLETION,
+		Prompt: prompt,
 	}
 
 	// Marshal the request to JSON
-	jsonData, err := json.Marshal(llmReq)
+	jsonData, err := json.Marshal(completionReq)
 	if err != nil {
 		return CompletionResponse{}, fmt.Errorf("error marshaling request: %w", err)
 	}

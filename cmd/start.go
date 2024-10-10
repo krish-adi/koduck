@@ -95,17 +95,23 @@ func startSession() {
 			}
 			embedResponse, _ := prompt.Embedding([]string{input})
 			searchResults := db.Search(input, embedResponse.Embeddings[0], db.KNOWLEDGE_BASE_IN_USE)
+			knowledgeContext := []string{}
+			fmt.Print("THE SOURCES:\n")
 			for _, result := range searchResults {
 				fmt.Printf("• %s :: %s\n", result.Filename, result.Text)
+				knowledgeContext = append(knowledgeContext, result.Text)
 			}
-			// _, err = prompt.LLM(input, "llama3")
-			// if err != nil {
-			// 	fmt.Print("\n")
-			// 	fmt.Println("Error generating answer:", err)
-			// 	fmt.Print("\n")
-			// 	fmt.Print("\n")
-			// 	continue
-			// }
+			fmt.Print("\n")
+			fmt.Print("\n")
+			fmt.Print("THE ANSWER:\n")
+			_, err = prompt.Completion(input, knowledgeContext)
+			if err != nil {
+				fmt.Print("\n")
+				fmt.Println("Error generating answer:", err)
+				fmt.Print("\n")
+				fmt.Print("\n")
+				continue
+			}
 		}
 
 		fmt.Print("\n")
